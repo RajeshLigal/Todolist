@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-
 const app = express();
 
 const items = ["buy food", "cook food"];
@@ -11,8 +10,6 @@ const workItems = [];
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
-
 
 mongoose.connect("mongodb://localhost:27017/todolistDB", {
   useNewUrlParser: true,
@@ -39,23 +36,29 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, function (err) {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("sucessfully added");
-  }
-});
+
 
 // Home route
 app.get("/", function (req, res) {
-  res.render("list", { listTitle: "Today", newListItems: items });
+  Item.find({}, function (err, foundItems) {
+    if (foundItems.length === 0) {
+      Item.insertMany(defaultItems, function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("sucessfully added");
+        }
+      });
+      res.redirect("/");
+    } else {
+      res.render("list", { listTitle: "Today", newListItems: foundItems });
+    }
+    
+  });
 });
-
 
 app.post("/", function (req, res) {
   const item = req.body.newItem;
-  
 });
 
 // Work Route
