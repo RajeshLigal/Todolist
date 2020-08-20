@@ -52,17 +52,10 @@ app.get("/", function (req, res) {
   res.render("list", { listTitle: "Today", newListItems: items });
 });
 
-// This if function allows to push items to work list if the listitle is Work
+
 app.post("/", function (req, res) {
   const item = req.body.newItem;
-  //res.body.list is the name = "list" of the button and the value = "work"
-  // if (req.body.list === "Work") {
-  //   workItems.push(item);
-  //   res.redirect("/work");
-  // } else {
-  //   items.push(item);
-  //   res.redirect("/");
-  // }
+  
 });
 
 // Work Route
