@@ -36,6 +36,13 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
+const listSchema = {
+  name: String,
+  items: [itemsSchema],
+};
+
+const List = mongoose.model("List", listSchema);
+
 // Home route
 app.get("/", function (req, res) {
   Item.find({}, function (err, foundItems) {
@@ -52,6 +59,31 @@ app.get("/", function (req, res) {
       res.render("list", { listTitle: "Today", newListItems: foundItems });
     }
   });
+});
+
+app.get("/:customListName", function (req, res) {
+  const customListName = req.params.customListName;
+
+  List.findOne({ name: customListName }, function (err, foundlist) {
+    if (!err) {
+      if (!foundlist) {
+        //create new list
+        const list = new List({
+          name: customListName,
+          items: defaultItems,
+        });
+        list.save();
+        res.redirect("/" + customListName);
+      } else {
+        //show an existing list
+        res.render("list", {listTitle: foundlist.name, newListItems: foundlist.items});
+      }
+    }
+  });
+
+  
+
+  
 });
 
 //submit post route for home route
@@ -76,11 +108,6 @@ app.post("/delete", function (req, res) {
       res.redirect("/");
     }
   });
-});
-
-// Work Route
-app.get("/work", function (req, res) {
-  res.render("list", { listTitle: "Work", newListItems: workItems });
 });
 
 // About Route
